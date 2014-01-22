@@ -1,6 +1,21 @@
 #!/usr/bin/python
+"""watch.py: Simple HTML templating
 
-import sys, os, time
+Usage: ./watch.py [options]
+
+Options:
+ -g generatorModule (default defaultGenerator)
+ -t templateFile (default template.html)
+ -d dataFile (default data.txt)
+ -o outputFile (default index.html)
+ -h this help
+"""
+
+import sys, os, time, getopt
+
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
 def generate(generatorModule, templatefilename, datafilename, outputfilename):
     generator = __import__(generatorModule)
@@ -26,22 +41,50 @@ def checkFilesModified(files, target):
             return True
     return False
 
-def main():
-    template = 'template.html'
-    data = 'data.txt'
-    target = 'index.html'
-    generator = 'defaultGenerator'
-    while True:
-        generate(generator, template, data, target)
-        print("Generated {} from {} and {}.".format(target, template, data))
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    try:
         try:
-            while True:
-                time.sleep(2)
-                if checkFilesModified([template, data], target):
-                    break
-        except KeyboardInterrupt:
-            print("bye")
-            return 0
+            opts, args = getopt.getopt(argv[1:], "g:t:d:o:?h")
+        except getopt.error, msg:
+            raise Usage(msg)
+
+        # process options
+        generator = 'defaultGenerator'
+        template = 'template.html'
+        data = 'data.txt'
+        output = 'index.html'
+        for o, a in opts:
+            if o == "-g":
+                generator = a
+            elif o == "-t":
+                template = a
+            elif o == "-d":
+                data = a
+            elif o == "-o":
+                output = a
+            elif o == "-h" or o == "-?":
+                print __doc__
+                return 0
+
+        # main watch loop
+        while True:
+            generate(generator, template, data, output)
+            print("Generated {} from {} and {}.".format(output, template, data))
+            try:
+                while True:
+                    time.sleep(2)
+                    if checkFilesModified([template, data], output):
+                        break
+            except KeyboardInterrupt:
+                print("bye")
+                return 0
+
+    except Usage, err:
+        sys.stderr.write(str(err.msg))
+        sys.stderr.write("\nfor help use -h\n")
+        return 2
 
 if __name__ == "__main__":
     sys.exit(main())
