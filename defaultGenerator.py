@@ -1,13 +1,13 @@
-_dataLines = []
-
 def readdata(datafilename):
+    dataLines = []
     f = open(datafilename)
     for l in f:
-        _dataLines.append(l.strip())
+        dataLines.append(l.strip())
     f.close()
+    return dataLines
 
-def title():
+def title(data):
     return "The default title"
 
-def content():
-    return "\n".join(map(lambda l: "<p>{}</p>".format(l), _dataLines))
+def content(data):
+    return "\n".join(map(lambda l: "<p>{}</p>".format(l), data))

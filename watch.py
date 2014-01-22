@@ -24,9 +24,9 @@ def generate(generatorModule, templatefilename, datafilename, outputfilename):
     template = tf.read()
     tf.close()
 
-    generator.readdata(datafilename)
-    title = generator.title()
-    content = generator.content()
+    data = generator.readdata(datafilename)
+    title = generator.title(data)
+    content = generator.content(data)
 
     out = open(outputfilename, 'w')
     out.write(template % { "title": title, "content": content })
@@ -67,6 +67,9 @@ def main(argv=None):
             elif o == "-h" or o == "-?":
                 print __doc__
                 return 0
+        if template == output or data == output or template == data:
+            sys.stderr.write("Can not use same filenames on template, output or data\n")
+            return 2
 
         # main watch loop
         while True:
@@ -84,7 +87,7 @@ def main(argv=None):
     except Usage, err:
         sys.stderr.write(str(err.msg))
         sys.stderr.write("\nfor help use -h\n")
-        return 2
+        return 3
 
 if __name__ == "__main__":
     sys.exit(main())
