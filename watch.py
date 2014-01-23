@@ -11,7 +11,7 @@ Options:
  -h this help
 """
 
-import sys, os, time, getopt
+import sys, os, time, getopt, codecs
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -28,7 +28,7 @@ def generate(generatorModule, templatefilename, datafilename, outputfilename):
     title = generator.title(data)
     content = generator.content(data)
 
-    out = open(outputfilename, 'w')
+    out = codecs.open(outputfilename, encoding='utf-8', mode='w')
     out.write(template % { "title": title, "content": content })
     out.close()
 

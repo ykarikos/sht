@@ -1,9 +1,11 @@
 """Create a list of images as the HTML content.
 Assumes that all lines in data file beginning with 'http' are image urls.
 """
+import codecs
+
 def readdata(datafilename):
     urls = []
-    f = open(datafilename)
+    f = codecs.open(datafilename, encoding='utf-8')
     for line in f:
         if line.startswith("http"):
             urls.append(line.strip())
